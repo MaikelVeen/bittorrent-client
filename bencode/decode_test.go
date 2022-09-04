@@ -79,6 +79,16 @@ func TestDecode(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		"decodes dictionaries correctly": {
+			args: args{
+				r: strings.NewReader("d6:lengthi351272960e4:name31:debian-10.2.0-amd64-netinst.iso11:piecelengthi262144ee"),
+			},
+			want: map[string]interface{}{
+				"length":      351272960,
+				"name":        "debian-10.2.0-amd64-netinst.iso",
+				"piecelength": 262144,
+			},
+		},
 	}
 
 	for name, tt := range tests {

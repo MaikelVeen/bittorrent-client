@@ -2,6 +2,7 @@ package bencode
 
 import (
 	"bufio"
+	"errors"
 	"io"
 	"strconv"
 )
@@ -34,8 +35,37 @@ func Unmarshal(r *bufio.Reader) (interface{}, error) {
 	switch c {
 	case Integer:
 		return unmarshalInt(r)
-	// TODO: Dictionaries.
-	// TODO: Lists.
+	case Dictionary:
+		dict := map[string]interface{}{}
+
+		for {
+			b, err := r.Peek(1)
+			if err != nil {
+				return nil, err
+			}
+
+			if b[0] == EndDelimiter {
+				_, err := r.ReadByte()
+				return dict, err
+			}
+
+			keyI, err := Unmarshal(r)
+			if err != nil {
+				return nil, err
+			}
+
+			key, ok := keyI.(string)
+			if !ok {
+				return nil, errors.New("non string key found")
+			}
+
+			val, err := Unmarshal(r)
+			if err != nil {
+				return nil, err
+			}
+
+			dict[key] = val
+		}
 	case List:
 		return unmarshalList(r)
 	default:
