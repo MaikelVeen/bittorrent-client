@@ -45,6 +45,40 @@ func TestDecode(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		"decodes an empty list correctly": {
+			args: args{
+				r: strings.NewReader("le"),
+			},
+			want:    []interface{}{},
+			wantErr: false,
+		},
+		"decodes a list of strings correctly": {
+			args: args{
+				r: strings.NewReader("l3:one3:two5:threee"),
+			},
+			want: []interface{}{
+				"one", "two", "three",
+			},
+			wantErr: false,
+		},
+		"decodes a mixed list correctly": {
+			args: args{
+				r: strings.NewReader("l3:one3:two5:threei10ee"),
+			},
+			want: []interface{}{
+				"one", "two", "three", 10,
+			},
+			wantErr: false,
+		},
+		"decodes a nested list correctly": {
+			args: args{
+				r: strings.NewReader("l3:one3:two5:threel3:one3:two5:threeee"),
+			},
+			want: []interface{}{
+				"one", "two", "three", []interface{}{"one", "two", "three"},
+			},
+			wantErr: false,
+		},
 	}
 
 	for name, tt := range tests {

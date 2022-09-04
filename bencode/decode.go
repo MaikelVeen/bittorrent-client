@@ -36,7 +36,8 @@ func Unmarshal(r *bufio.Reader) (interface{}, error) {
 		return unmarshalInt(r)
 	// TODO: Dictionaries.
 	// TODO: Lists.
-
+	case List:
+		return unmarshalList(r)
 	default:
 		return unmarshalString(r)
 	}
@@ -83,4 +84,27 @@ func unmarshalString(r *bufio.Reader) (string, error) {
 	}
 
 	return string(stringBuf), nil
+}
+
+func unmarshalList(r *bufio.Reader) ([]interface{}, error) {
+	list := []interface{}{}
+
+	for {
+		b, err := r.Peek(1)
+		if err != nil {
+			return nil, err
+		}
+
+		if b[0] == EndDelimiter {
+			_, err := r.ReadByte()
+			return list, err
+		}
+
+		val, err := Unmarshal(r)
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, val)
+	}
 }
