@@ -7,19 +7,25 @@ import (
 )
 
 const (
-	Dictionary       byte = 'd'
-	Integer          byte = 'i'
-	IntegerEndMarker byte = 'e'
-	List             byte = 'l'
+	Dictionary            byte = 'd'
+	Integer               byte = 'i'
+	EndDelimiter          byte = 'e'
+	List                  byte = 'l'
+	StringLengthDelimiter byte = ':'
 )
 
 // Decode parses the reader stream and returns
 // the Go type representation of a bencode encoded file.
 func Decode(r io.Reader) (interface{}, error) {
-	return decode(bufio.NewReader(r))
+	i, err := Unmarshal(bufio.NewReader(r))
+	if err != nil {
+		return nil, err
+	}
+
+	return i, nil
 }
 
-func decode(r *bufio.Reader) (interface{}, error) {
+func Unmarshal(r *bufio.Reader) (interface{}, error) {
 	c, err := r.ReadByte()
 	if err != nil {
 		return nil, err
@@ -27,19 +33,54 @@ func decode(r *bufio.Reader) (interface{}, error) {
 
 	switch c {
 	case Integer:
-		integerSlice, err := r.ReadBytes(IntegerEndMarker)
-		if err != nil {
-			return nil, err
-		}
+		return unmarshalInt(r)
+	// TODO: Dictionaries.
+	// TODO: Lists.
 
-		buf := integerSlice[:len(integerSlice)-1]
-		integer, err := strconv.Atoi(string(buf))
-		if err != nil {
-			return nil, err
-		}
+	default:
+		return unmarshalString(r)
+	}
+}
 
-		return integer, nil
+func unmarshalInt(r *bufio.Reader) (int, error) {
+	integerSlice, err := r.ReadBytes(EndDelimiter)
+	if err != nil {
+		return -1, err
 	}
 
-	return nil, nil
+	buf := integerSlice[:len(integerSlice)-1]
+	integer, err := strconv.Atoi(string(buf))
+	if err != nil {
+		return -1, err
+	}
+
+	return integer, nil
+}
+
+func unmarshalString(r *bufio.Reader) (string, error) {
+	if err := r.UnreadByte(); err != nil {
+		return "", err
+	}
+
+	lengthSlice, err := r.ReadBytes(StringLengthDelimiter)
+	if err != nil {
+		return "", err
+	}
+
+	buf := lengthSlice[:len(lengthSlice)-1]
+	length, err := strconv.Atoi(string(buf))
+	if err != nil {
+		return "", err
+	}
+
+	stringBuf := make([]byte, length)
+	for i := 0; i < length; i++ {
+		byt, err := r.ReadByte()
+		if err != nil {
+			return "", err
+		}
+		stringBuf[i] = byt
+	}
+
+	return string(stringBuf), nil
 }

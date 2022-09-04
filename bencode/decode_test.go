@@ -30,7 +30,19 @@ func TestDecode(t *testing.T) {
 			args: args{
 				r: strings.NewReader("i4r20e"),
 			},
-
+			wantErr: true,
+		},
+		"decodes a single string correctly": {
+			args: args{
+				r: strings.NewReader("10:loremipsum"),
+			},
+			wantErr: false,
+			want:    "loremipsum",
+		},
+		"returns an error if string length is incorrect": {
+			args: args{
+				r: strings.NewReader("5:qwe"),
+			},
 			wantErr: true,
 		},
 	}
