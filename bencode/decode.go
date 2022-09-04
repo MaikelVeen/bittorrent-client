@@ -98,14 +98,15 @@ func unmarshalString(r *bufio.Reader) (string, error) {
 		return "", err
 	}
 
-	buf := lengthSlice[:len(lengthSlice)-1]
-	length, err := strconv.Atoi(string(buf))
+	lengthSlice = lengthSlice[:len(lengthSlice)-1]
+
+	length, err := strconv.ParseInt(string(lengthSlice), 10, 64)
 	if err != nil {
 		return "", err
 	}
 
 	stringBuf := make([]byte, length)
-	for i := 0; i < length; i++ {
+	for i := int64(0); i < length; i++ {
 		byt, err := r.ReadByte()
 		if err != nil {
 			return "", err

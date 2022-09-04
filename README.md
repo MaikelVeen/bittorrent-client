@@ -1,6 +1,6 @@
 # bittorrent-client
 
-bittorrent-client is a side project to that contains a handwritten bittorrent client in Go 
+bittorrent-client is a side project that contains a handwritten bittorrent client in Go 
 only using standard libraries in Go.
 
 ## Resources
