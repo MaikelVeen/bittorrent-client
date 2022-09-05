@@ -4,6 +4,6 @@ package torrent
 type TorrentInfo struct {
 	Length      int    `json:"length"`
 	Name        string `json:"name"`
-	Pieces      string `json:"pieces"`
 	PieceLength int    `json:"piece length"`
+	Pieces      string `json:"pieces"`
 }
