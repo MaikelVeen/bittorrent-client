@@ -16,7 +16,7 @@ const (
 	StringLengthDelimiter byte = ':'
 )
 
-// decode parses the reader stream and returns
+// Decode parses the reader stream and returns
 // the Go type representation of a bencode encoded file.
 func Decode(r io.Reader, v interface{}) error {
 	raw, err := decode(r)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/MaikelVeen/bittorrent-client/torrent"
@@ -13,5 +12,20 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(tor.TrackerURL(torrent.RandomPeerID(), torrent.Port))
+	announceURL, err := tor.TrackerURL(torrent.RandomPeerID(), torrent.Port)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resp, err := torrent.Announce(announceURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	/*peers, err := resp.PeerAddresses()
+	if err != nil {
+		log.Fatal(err)
+	}*/
+
+	log.Default().Print(resp.FailureReason)
 }
