@@ -2,6 +2,7 @@ package bencode
 
 import (
 	"bufio"
+	"encoding/json"
 	"errors"
 	"io"
 	"strconv"
@@ -15,9 +16,27 @@ const (
 	StringLengthDelimiter byte = ':'
 )
 
-// Decode parses the reader stream and returns
+// decode parses the reader stream and returns
 // the Go type representation of a bencode encoded file.
-func Decode(r io.Reader) (interface{}, error) {
+func Decode(r io.Reader, v interface{}) error {
+	raw, err := decode(r)
+	if err != nil {
+		return err
+	}
+
+	jsonStr, err := json.Marshal(raw)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(jsonStr, v); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func decode(r io.Reader) (interface{}, error) {
 	i, err := Unmarshal(bufio.NewReader(r))
 	if err != nil {
 		return nil, err

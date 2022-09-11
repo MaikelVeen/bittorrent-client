@@ -97,7 +97,7 @@ func TestDecode(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := Decode(tt.args.r)
+			got, err := decode(tt.args.r)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Decode() error = %v, wantErr %v", err, tt.wantErr)
 				return

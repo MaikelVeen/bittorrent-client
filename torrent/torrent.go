@@ -37,20 +37,8 @@ func Open(name string) (*TorrentFile, error) {
 		log.Fatal(err)
 	}
 
-	raw, err := bencode.Decode(reader)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// TODO: move to unmarshal to bencode package.
-	// Convert map to json string
-	jsonStr, err := json.Marshal(raw)
-	if err != nil {
-		return nil, err
-	}
-
-	// Convert json string to struct
 	var torrent TorrentFile
-	if err := json.Unmarshal(jsonStr, &torrent); err != nil {
+	if err := bencode.Decode(reader, &torrent); err != nil {
 		return nil, err
 	}
 
