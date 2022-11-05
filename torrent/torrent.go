@@ -8,7 +8,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/MaikelVeen/bittorrent-client/bencode"
+	"github.com/jackpal/bencode-go"
 )
 
 // Port to listen on
@@ -18,16 +18,21 @@ const Port uint16 = 6881
 // a .torrent file.
 type TorrentFile struct {
 	// Announce is the URL of the tracker.
-	Announce string `json:"announce"`
+	Announce string `bencode:"announce"`
+
 	// Comment is an optional field containing free-form textual comments of the torrent author.
-	Comment string `json:"comment"`
+	Comment string `bencode:"comment"`
+
 	// CreatedAt is an optional field containing the creation time of the torrent, in standard UNIX epoch format.
-	CreatedAt int `json:"creation date"`
+	CreatedAt int `bencode:"creation date"`
+
 	// CreatedBy is an optional field containing the name and version of the program used to create the .torrent. Optional.
-	CreatedBy string `json:"created by"`
+	CreatedBy string `bencode:"created by"`
+
 	// Encoding is an optional field containing the string encoding format used to generate the pieces part of the info dictionary in the .torrent metafile
-	Encoding string      `json:"encoding"`
-	Info     TorrentInfo `json:"info"`
+	Encoding string `bencode:"encoding"`
+
+	Info TorrentInfo `bencode:"info"`
 }
 
 // Open returns a new torrent instance.
@@ -38,7 +43,7 @@ func Open(name string) (*TorrentFile, error) {
 	}
 
 	var torrent TorrentFile
-	if err := bencode.Decode(reader, &torrent); err != nil {
+	if err := bencode.Unmarshal(reader, &torrent); err != nil {
 		return nil, err
 	}
 

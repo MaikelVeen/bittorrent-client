@@ -22,10 +22,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	/*peers, err := resp.PeerAddresses()
+	peers, err := resp.PeerAddresses()
 	if err != nil {
 		log.Fatal(err)
-	}*/
+	}
 
-	log.Default().Print(resp.FailureReason)
+	log.Default().Print(peers[0])
 }
